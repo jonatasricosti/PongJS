@@ -43,12 +43,44 @@ Player2Image.onload = onImageLoad;
 
   LoadFiles();
 
+  // use essa função pra limpar a tela
+  function ClearScreen()
+  {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
 
   // use essa função pra desenhar uma imagem na tela
   function DrawImage(x, y, image)
   {
     ctx.drawImage(image, x, y);
   }
+
+  // use essa função pra desenhar uma imagem cortada na tela
+  function DrawImageFrame(x, y, sourceImage, frameWidth, frameHeight, FrameIndex)
+  {
+    const cols = Math.floor(sourceImage.width / frameWidth);
+    const sx = (FrameIndex % cols)*frameWidth;
+    const sy = Math.floor(FrameIndex / cols) * frameHeight;
+
+    ctx.drawImage(sourceImage, sx, sy, frameWidth, frameHeight, x,y,frameWidth, frameHeight);
+  }
+
+
+  // use essa função pra desenhar texto na tela
+  function DrawText(x,y,sourceImage,text,charSize,StarCharASCIICode)
+  {
+    for(let i = 0; i < text.length; i++)
+    {
+      const FrameIndex = text.charCodeAt(i) - StarCharASCIICode;
+      DrawImageFrame(x + i*charSize, y, sourceImage, charSize, charSize, FrameIndex);
+    }
+  }
+
+
+  let player1Score = 0;
+  let player2Score = 0;
+  let timer = 0;
 
 
 
@@ -57,10 +89,31 @@ Player2Image.onload = onImageLoad;
   {
 
 
+    ClearScreen()
     DrawImage(0,0, BackgroundImage);
     DrawImage(20, 190, Player1Image);
     DrawImage(640-2*20, 190, Player2Image);
     DrawImage(310, 230, BallImage);
+
+    DrawText(80,0,NumbersImage,player1Score.toString(),60,0);
+    DrawText(500,0,NumbersImage,player2Score.toString(),60,0);
+
+
     
+
+    timer++;
+
+    if(timer >= 10 && player1Score < 99)
+    {
+      player1Score++;
+      timer = 0;
+    }
+
+    if(player1Score >= 99)
+    {
+      player1Score = 99;
+    }
+
+
     requestAnimationFrame(gameLoop);
   }
