@@ -78,9 +78,56 @@ Player2Image.onload = onImageLoad;
   }
 
 
+  let tecla = null;
+  window.addEventListener('keydown', function(event)
+  {
+  tecla = event.key;
+});
+
+
+  let player1 =
+    {
+        x: 20,
+        y: 190,
+        width: 20,
+        height: 100,
+        speed: 5
+    };
+
+
   let player1Score = 0;
   let player2Score = 0;
   let timer = 0;
+
+// use essa função pra mover o player1
+function MovePlayer1()
+{
+  // programação do teclado
+
+  if(tecla === 'ArrowDown')
+  {
+    player1.y = player1.y+player1.speed;
+    tecla = null;
+  }
+
+  if(tecla === 'ArrowUp')
+  {
+    player1.y = player1.y-player1.speed;
+    tecla = null;
+  }
+
+  // colisão lado de cima
+  if(player1.y < 0)
+  {
+    player1.y = 0;
+  }
+
+  // colisão lado de baixo
+  if(player1.y > canvas.height-player1.height)
+  {
+    player1.y = canvas.height-player1.height;
+  }
+}
 
 
 
@@ -90,10 +137,16 @@ Player2Image.onload = onImageLoad;
 
 
     ClearScreen()
+
+    // física
+    MovePlayer1()
+
     DrawImage(0,0, BackgroundImage);
-    DrawImage(20, 190, Player1Image);
+    DrawImage(player1.x, player1.y, Player1Image);
     DrawImage(640-2*20, 190, Player2Image);
     DrawImage(310, 230, BallImage);
+
+
 
     DrawText(80,0,NumbersImage,player1Score.toString(),60,0);
     DrawText(500,0,NumbersImage,player2Score.toString(),60,0);
