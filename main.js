@@ -97,6 +97,61 @@ Player2Image.onload = onImageLoad;
         speed: 10
     };
 
+    let player2 =
+    {
+        x: 600,
+        y: 190,
+        width: 20,
+        height: 100,
+        speed: 10
+    };
+
+    let ball =
+    {
+        x: 310,
+        y: 230,
+        vx: 20,
+        vy: 10,
+        width: 20,
+        height: 20
+    };
+
+
+
+// use essa função pra mover o player2 por inteligência artificial
+function MovePlayer2()
+{
+  let py = player2.y + player2.height/2;
+
+  if(ball.vx > 0 && ball.x > 200)
+  {
+    if(py > ball.y)
+    {
+      // move pra cima
+      player2.y = player2.y - player2.speed;
+    }
+
+
+    if(py < ball.y)
+    {
+      // move pra baixo
+      player2.y = player2.y + player2.speed;
+    }
+  }
+
+  // colisão lado de cima
+  if(player2.y < 0)
+  {
+    player2.y = 0;
+  }
+
+  // colisão lado de baixo
+  if(player2.y > canvas.height-player2.height)
+  {
+    player2.y = canvas.height-player2.height;
+  }
+}
+
 
   let player1Score = 0;
   let player2Score = 0;
@@ -139,21 +194,21 @@ function MovePlayer1()
   {
 
 
-    ClearScreen()
+    ClearScreen();
 
     // física
-    MovePlayer1()
+    MovePlayer1();
+    MovePlayer2();
 
     DrawImage(0,0, BackgroundImage);
     DrawImage(player1.x, player1.y, Player1Image);
-    DrawImage(640-2*20, 190, Player2Image);
-    DrawImage(310, 230, BallImage);
+    DrawImage(player2.x, player2.y, Player2Image);
+    DrawImage(ball.x, ball.y, BallImage);
 
 
 
     DrawText(80,0,NumbersImage,player1Score.toString(),60,0);
     DrawText(500,0,NumbersImage,player2Score.toString(),60,0);
-
 
     
 
