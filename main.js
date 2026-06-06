@@ -30,7 +30,7 @@ Player2Image.onload = onImageLoad;
 
 
   // use essa função pra carregar arquivos
-  // nota: essa função só deve ser chamada no começo do program
+  // nota: essa função só deve ser chamada no começo do programa
   function LoadFiles()
   {
 
@@ -91,7 +91,7 @@ Player2Image.onload = onImageLoad;
         y: 190,
         width: 20,
         height: 100,
-        speed: 5
+        speed: 10
     };
 
 
