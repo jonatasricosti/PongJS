@@ -8,6 +8,9 @@ const NumbersImage = new Image();
 const Player1Image = new Image();
 const Player2Image = new Image();
 
+const FPS = 30;
+const FRAME_DURATION = 1000 / FPS;
+
 
 let imagesLoaded = 0;
   function onImageLoad()
@@ -168,5 +171,5 @@ function MovePlayer1()
     }
 
 
-    requestAnimationFrame(gameLoop);
+    setTimeout(gameLoop, FRAME_DURATION);
   }
