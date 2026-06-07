@@ -188,6 +188,73 @@ function MovePlayer1()
 }
 
 
+  // use essa função pra detectar colisão entre dois retângulos
+  function AABB(x1, y1, width1, height1, x2, y2, width2, height2)
+  {
+      if(x1 < x2 + width2 &&
+    x2 < x1+width1 &&
+    y1 < y2+height2 &&
+    y2 < y1+height1)
+    {
+      return 1;
+    }
+
+    return 0;
+  }
+
+  // essa função move a bola e verifica colisões
+  function MoveBall()
+  {
+    ball.x = ball.x + ball.vx;
+    ball.y = ball.y + ball.vy;
+    
+    // se passou do lado esquerdo da tela
+    if(ball.x < 0)
+    {
+      // coloca a bola no centro da tela
+      ball.x = (canvas.width-ball.width)/2;
+      ball.y = (canvas.height-ball.height)/2;
+      player2Score = player2Score+1; // player2 faz um ponto
+    }
+    
+    // se passou do lado direito da tela
+    if(ball.x > canvas.width - ball.width)
+    {
+      // coloca a bola no centro da tela
+      ball.x = (canvas.width-ball.width)/2;
+      ball.y = (canvas.height-ball.height)/2;
+      player1Score = player1Score+1; // player1 faz um ponto
+    }
+    
+    
+    // se passou do lado de cima da tela
+    if(ball.y < 0)
+    {
+      ball.vy = -ball.vy;
+    }
+    
+    // se passou do lado de baixo da tela
+    if(ball.y > canvas.height - ball.height)
+    {
+      ball.vy = -ball.vy;
+    }
+    
+    
+    // colisão com o player1
+    if(AABB(player1.x,player1.y,player1.width,player1.height,ball.x,ball.y,ball.width,ball.height))
+    {
+      ball.vx = -ball.vx;
+    }
+    
+    // colisão com o player2
+    if(AABB(player2.x,player2.y,player2.width,player2.height,ball.x,ball.y,ball.width,ball.height))
+    {
+      ball.vx = -ball.vx;
+    }
+  }
+
+
+
 
   // game loop
   function gameLoop()
@@ -199,31 +266,17 @@ function MovePlayer1()
     // física
     MovePlayer1();
     MovePlayer2();
+    MoveBall();
 
+    
     DrawImage(0,0, BackgroundImage);
     DrawImage(player1.x, player1.y, Player1Image);
     DrawImage(player2.x, player2.y, Player2Image);
     DrawImage(ball.x, ball.y, BallImage);
 
 
-
     DrawText(80,0,NumbersImage,player1Score.toString(),60,0);
     DrawText(500,0,NumbersImage,player2Score.toString(),60,0);
-
-    
-
-    timer++;
-
-    if(timer >= 10 && player1Score < 99)
-    {
-      player1Score++;
-      timer = 0;
-    }
-
-    if(player1Score >= 99)
-    {
-      player1Score = 99;
-    }
 
 
     setTimeout(gameLoop, FRAME_DURATION);
