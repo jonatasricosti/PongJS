@@ -1,18 +1,19 @@
-const canvas = document.getElementById('Janela');
-const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById('Janela');
+  const ctx = canvas.getContext('2d');
 
 
-const BackgroundImage = new Image();
-const BallImage = new Image();
-const NumbersImage = new Image();
-const Player1Image = new Image();
-const Player2Image = new Image();
+  const BackgroundImage = new Image();
+  const BallImage = new Image();
+  const NumbersImage = new Image();
+  const Player1Image = new Image();
+  const Player2Image = new Image();
 
-const FPS = 30;
-const FRAME_DURATION = 1000 / FPS;
+  const FPS = 30;
+  const FRAME_DURATION = 1000 / FPS;
 
 
-let imagesLoaded = 0;
+  let imagesLoaded = 0;
+
   function onImageLoad()
   {
     imagesLoaded++;
@@ -22,14 +23,11 @@ let imagesLoaded = 0;
     }
   }
 
-
-
-
-BackgroundImage.onload = onImageLoad;
-BallImage.onload = onImageLoad;
-NumbersImage.onload = onImageLoad;
-Player1Image.onload = onImageLoad;
-Player2Image.onload = onImageLoad;
+  BackgroundImage.onload = onImageLoad;
+  BallImage.onload = onImageLoad;
+  NumbersImage.onload = onImageLoad;
+  Player1Image.onload = onImageLoad;
+  Player2Image.onload = onImageLoad;
 
 
   // use essa função pra carregar arquivos
@@ -81,13 +79,19 @@ Player2Image.onload = onImageLoad;
   }
 
 
-  let tecla = null;
-  window.addEventListener('keydown', function(event)
-  {
-  tecla = event.key;
-});
+    // Controles
+    const tecla = {};
+
+    document.addEventListener("keydown", e =>{
+        tecla[e.key] = true;
+    });
+
+    document.addEventListener("keyup", e => {
+        tecla[e.key] = false;
+    });
 
 
+  // esse objeto representa o player1
   let player1 =
     {
         x: 20,
@@ -97,6 +101,7 @@ Player2Image.onload = onImageLoad;
         speed: 10
     };
 
+    // esse objeto representa o player2
     let player2 =
     {
         x: 600,
@@ -106,6 +111,7 @@ Player2Image.onload = onImageLoad;
         speed: 10
     };
 
+    // esse objeto representa a bola
     let ball =
     {
         x: 310,
@@ -117,75 +123,71 @@ Player2Image.onload = onImageLoad;
     };
 
 
-
-// use essa função pra mover o player2 por inteligência artificial
-function MovePlayer2()
-{
-  let py = player2.y + player2.height/2;
-
-  if(ball.vx > 0 && ball.x > 200)
-  {
-    if(py > ball.y)
-    {
-      // move pra cima
-      player2.y = player2.y - player2.speed;
-    }
-
-
-    if(py < ball.y)
-    {
-      // move pra baixo
-      player2.y = player2.y + player2.speed;
-    }
-  }
-
-  // colisão lado de cima
-  if(player2.y < 0)
-  {
-    player2.y = 0;
-  }
-
-  // colisão lado de baixo
-  if(player2.y > canvas.height-player2.height)
-  {
-    player2.y = canvas.height-player2.height;
-  }
-}
-
-
   let player1Score = 0;
   let player2Score = 0;
   let timer = 0;
 
-// use essa função pra mover o player1
-function MovePlayer1()
-{
-  // programação do teclado
-
-  if(tecla === 'ArrowDown')
+  // essa função move o player1 pelo teclado
+  function MovePlayer1()
   {
-    player1.y = player1.y+player1.speed;
-    tecla = null;
+    
+    // programação do teclado
+    if(tecla["ArrowDown"])
+    {
+      player1.y = player1.y+player1.speed;
+    }
+
+    if(tecla["ArrowUp"])
+    {
+      player1.y = player1.y-player1.speed;
+    }
+
+    // colisão lado de cima
+    if(player1.y < 0)
+    {
+      player1.y = 0;
+    }
+
+    // colisão lado de baixo
+    if(player1.y > canvas.height-player1.height)
+    {
+      player1.y = canvas.height-player1.height;
+    }
   }
 
-  if(tecla === 'ArrowUp')
+  // essa função move o player2 por inteligência artificial
+  function MovePlayer2()
   {
-    player1.y = player1.y-player1.speed;
-    tecla = null;
-  }
+    let py = player2.y + player2.height/2;
 
-  // colisão lado de cima
-  if(player1.y < 0)
-  {
-    player1.y = 0;
-  }
+    if(ball.vx > 0 && ball.x > 200)
+    {
+      if(py > ball.y)
+      {
+        // move pra cima
+        player2.y = player2.y - player2.speed;
+      }
 
-  // colisão lado de baixo
-  if(player1.y > canvas.height-player1.height)
-  {
-    player1.y = canvas.height-player1.height;
+
+      if(py < ball.y)
+      {
+        // move pra baixo
+        player2.y = player2.y + player2.speed;
+      }
+    }
+
+    // colisão lado de cima
+    if(player2.y < 0)
+    {
+      player2.y = 0;
+    }
+
+    // colisão lado de baixo
+    if(player2.y > canvas.height-player2.height)
+    {
+      player2.y = canvas.height-player2.height;
+    }
   }
-}
 
 
   // use essa função pra detectar colisão entre dois retângulos
@@ -268,15 +270,13 @@ function MovePlayer1()
     MovePlayer2();
     MoveBall();
 
-    
     DrawImage(0,0, BackgroundImage);
+    DrawText(80,0,NumbersImage,player1Score.toString(),60,0);
+    DrawText(500,0,NumbersImage,player2Score.toString(),60,0);
+
     DrawImage(player1.x, player1.y, Player1Image);
     DrawImage(player2.x, player2.y, Player2Image);
     DrawImage(ball.x, ball.y, BallImage);
-
-
-    DrawText(80,0,NumbersImage,player1Score.toString(),60,0);
-    DrawText(500,0,NumbersImage,player2Score.toString(),60,0);
 
 
     setTimeout(gameLoop, FRAME_DURATION);
