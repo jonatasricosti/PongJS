@@ -78,6 +78,31 @@
     }
   }
 
+    const HitSound = new Audio('sounds/hit.wav');
+    const WallSound = new Audio('sounds/wall.wav');
+    const ScoreSound = new Audio('sounds/score.wav');
+
+    // toca som
+    function PlayHitSound()
+    {
+      HitSound.currentTime = 0;
+      HitSound.play();
+    } 
+
+    function PlayWallSound()
+    {
+      WallSound.currentTime = 0;
+      WallSound.play();
+    }
+
+    function PlayScoreSound()
+    {
+      ScoreSound.currentTime = 0;
+      ScoreSound.play();
+    } 
+
+
+
 
     // Controles
     const tecla = {};
@@ -217,6 +242,7 @@
       ball.x = (canvas.width-ball.width)/2;
       ball.y = (canvas.height-ball.height)/2;
       player2Score = player2Score+1; // player2 faz um ponto
+      PlayScoreSound();
     }
     
     // se passou do lado direito da tela
@@ -226,6 +252,7 @@
       ball.x = (canvas.width-ball.width)/2;
       ball.y = (canvas.height-ball.height)/2;
       player1Score = player1Score+1; // player1 faz um ponto
+      PlayScoreSound();
     }
     
     
@@ -233,12 +260,14 @@
     if(ball.y < 0)
     {
       ball.vy = -ball.vy;
+      PlayWallSound();
     }
     
     // se passou do lado de baixo da tela
     if(ball.y > canvas.height - ball.height)
     {
       ball.vy = -ball.vy;
+      PlayWallSound();
     }
     
     
@@ -246,12 +275,14 @@
     if(AABB(player1.x,player1.y,player1.width,player1.height,ball.x,ball.y,ball.width,ball.height))
     {
       ball.vx = -ball.vx;
+      PlayHitSound();
     }
     
     // colisão com o player2
     if(AABB(player2.x,player2.y,player2.width,player2.height,ball.x,ball.y,ball.width,ball.height))
     {
       ball.vx = -ball.vx;
+      PlayHitSound();
     }
   }
 
