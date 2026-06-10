@@ -7,6 +7,7 @@
   const NumbersImage = new Image();
   const Player1Image = new Image();
   const Player2Image = new Image();
+  const PauseImage = new Image();
 
   const FPS = 30;
   const FRAME_DURATION = 1000 / FPS;
@@ -17,7 +18,7 @@
   function onImageLoad()
   {
     imagesLoaded++;
-    if (imagesLoaded === 5)
+    if (imagesLoaded === 6)
     {
       requestAnimationFrame(gameLoop);
     }
@@ -28,6 +29,7 @@
   NumbersImage.onload = onImageLoad;
   Player1Image.onload = onImageLoad;
   Player2Image.onload = onImageLoad;
+  PauseImage.onload = onImageLoad;
 
 
   // use essa função pra carregar arquivos
@@ -35,11 +37,12 @@
   function LoadFiles()
   {
 
-    BackgroundImage.src = 'gfx/background.bmp'
-    BallImage.src = 'gfx/ball.bmp'
-    NumbersImage.src = 'gfx/numbers.bmp'
-    Player1Image.src = 'gfx/player1.bmp'
-    Player2Image.src = 'gfx/player2.bmp'
+    BackgroundImage.src = 'gfx/background.png'
+    BallImage.src = 'gfx/ball.png'
+    NumbersImage.src = 'gfx/numbers.png'
+    Player1Image.src = 'gfx/player1.png'
+    Player2Image.src = 'gfx/player2.png'
+    PauseImage.src = 'gfx/pause.png'
   }
 
   LoadFiles();
@@ -287,15 +290,8 @@
   }
 
 
-
-
-  // game loop
-  function gameLoop()
+  function PlayGame()
   {
-
-
-    ClearScreen();
-
     // física
     MovePlayer1();
     MovePlayer2();
@@ -307,8 +303,66 @@
 
     DrawImage(player1.x, player1.y, Player1Image);
     DrawImage(player2.x, player2.y, Player2Image);
-    DrawImage(ball.x, ball.y, BallImage);
+    DrawImage(ball.x,ball.y,BallImage);
+  }
 
+  let GAME = 0;
+  let PAUSE = 1;
+  let MENU = 2;
+  let game_estado = GAME;
+
+  function PauseGame()
+  {
+    DrawImage(0,0, BackgroundImage);
+    DrawText(80,0,NumbersImage,player1Score.toString(),60,0);
+    DrawText(500,0,NumbersImage,player2Score.toString(),60,0);
+
+    DrawImage(player1.x, player1.y, Player1Image);
+    DrawImage(player2.x, player2.y, Player2Image);
+    DrawImage(ball.x,ball.y,BallImage);
+    DrawImage(0,0,PauseImage);
+  }
+
+
+  // use essa função pra trocar os estados de tela do jogo
+  function RunGame()
+  {
+    switch(game_estado)
+    {
+    case GAME: PlayGame(); break;
+    case PAUSE: PauseGame(); break;
+    }
+  }
+
+
+    let key = null;
+  window.addEventListener('keydown', function(event)
+  {
+  key = event.key;
+});
+
+
+
+
+  // game loop
+  function gameLoop()
+  {
+
+    if(game_estado == GAME && key === 'Escape')
+    {
+      game_estado = PAUSE;
+      key = null;
+    }
+
+    else if(game_estado == PAUSE && key === 'Escape')
+    {
+      game_estado = GAME;
+      key = null;
+    }
+
+
+    ClearScreen();
+    RunGame();
 
     setTimeout(gameLoop, FRAME_DURATION);
   }
