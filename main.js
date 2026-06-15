@@ -8,6 +8,7 @@
   const Player1Image = new Image();
   const Player2Image = new Image();
   const PauseImage = new Image();
+  const WhiteFontImage = new Image();
 
   const FPS = 30;
   const FRAME_DURATION = 1000 / FPS;
@@ -18,7 +19,7 @@
   function onImageLoad()
   {
     imagesLoaded++;
-    if (imagesLoaded === 6)
+    if (imagesLoaded === 7)
     {
       requestAnimationFrame(gameLoop);
     }
@@ -30,6 +31,7 @@
   Player1Image.onload = onImageLoad;
   Player2Image.onload = onImageLoad;
   PauseImage.onload = onImageLoad;
+  WhiteFontImage.onload = onImageLoad;
 
 
   // use essa função pra carregar arquivos
@@ -43,6 +45,7 @@
     Player1Image.src = 'gfx/player1.png'
     Player2Image.src = 'gfx/player2.png'
     PauseImage.src = 'gfx/pause.png'
+    WhiteFontImage.src = 'gfx/whitefont.png'
   }
 
   LoadFiles();
@@ -72,11 +75,11 @@
 
 
   // use essa função pra desenhar texto na tela
-  function DrawText(x,y,sourceImage,text,charSize,StarCharASCIICode)
+  function DrawText(x,y,sourceImage,text,charSize,StartCharASCIICode)
   {
     for(let i = 0; i < text.length; i++)
     {
-      const FrameIndex = text.charCodeAt(i) - StarCharASCIICode;
+      const FrameIndex = text.charCodeAt(i) - StartCharASCIICode;
       DrawImageFrame(x + i*charSize, y, sourceImage, charSize, charSize, FrameIndex);
     }
   }
@@ -306,10 +309,11 @@
     DrawImage(ball.x,ball.y,BallImage);
   }
 
-  let GAME = 0;
-  let PAUSE = 1;
-  let MENU = 2;
-  let game_estado = GAME;
+  let INTRO = 0;
+  let GAME = 1;
+  let PAUSE = 2;
+  let MENU = 3;
+  let game_estado = INTRO;
 
   function PauseGame()
   {
@@ -323,12 +327,67 @@
     DrawImage(0,0,PauseImage);
   }
 
+  let textProgress = 0;
+  let textTimer = 0;
+  const TYPE_DELAY = 5;
+
+  // use essa função pra desenhar texto com efeito de digitação
+  function TypeEffect(x, y, delay, text, charSize, asciiOffset)
+  {
+  
+  let col = 0;
+  let row = 0;
+
+  textTimer++;
+  if (textTimer >= delay)
+  {
+    textProgress++;
+    textTimer = 0;
+  }
+
+  if (textProgress > text.length)
+  {
+    textProgress = text.length;
+  }
+
+  for (let i = 0; i < textProgress; i++)
+  {
+    const char = text[i];
+
+    if (char === "\n")
+    {
+      row++;
+      col = 0;
+      continue;
+    }
+
+    const frame = char.charCodeAt(0) - asciiOffset;
+
+    DrawImageFrame(x + col * charSize, y + row * charSize, WhiteFontImage , charSize, charSize, frame);
+    col++;
+  }
+}
+
+
+  let introTimer = 0;
+  function PlayIntro()
+  {
+    TypeEffect(0,70,0,"Bem vindo ao jogo\nQuem fazer 10 pontos ganha\nUse as setas pra cima ou pra baixo\npra mover a raquete",16,32);
+    introTimer++;
+    if(introTimer > 200)
+    {
+      game_estado = GAME;
+      introTimer = 0;
+    }
+  }
+
 
   // use essa função pra trocar os estados de tela do jogo
   function RunGame()
   {
     switch(game_estado)
     {
+    case INTRO: PlayIntro(); break;
     case GAME: PlayGame(); break;
     case PAUSE: PauseGame(); break;
     }
