@@ -163,12 +163,12 @@
   {
     
     // programação do teclado
-    if(tecla["ArrowDown"])
+    if(tecla["s"])
     {
       player1.y = player1.y+player1.speed;
     }
 
-    if(tecla["ArrowUp"])
+    if(tecla["w"])
     {
       player1.y = player1.y-player1.speed;
     }
@@ -186,8 +186,36 @@
     }
   }
 
-  // essa função move o player2 por inteligência artificial
+    // essa função move o player2 pelo teclado
   function MovePlayer2()
+  {
+    
+    // programação do teclado
+    if(tecla["ArrowDown"])
+    {
+      player2.y = player2.y+player2.speed;
+    }
+
+    if(tecla["ArrowUp"])
+    {
+      player2.y = player2.y-player2.speed;
+    }
+
+    // colisão lado de cima
+    if(player2.y < 0)
+    {
+      player2.y = 0;
+    }
+
+    // colisão lado de baixo
+    if(player2.y > canvas.height-player2.height)
+    {
+      player2.y = canvas.height-player2.height;
+    }
+  }
+
+  // essa função move o player2 por inteligência artificial
+  function MovePlayer2ByCPU()
   {
     let py = player2.y + player2.height/2;
 
@@ -372,7 +400,7 @@
   let introTimer = 0;
   function PlayIntro()
   {
-    TypeEffect(0,70,0,"Bem vindo ao jogo\nQuem fazer 10 pontos ganha\nUse as setas pra cima ou pra baixo\npra mover a raquete",16,32);
+    TypeEffect(0,70,0,"Bem vindo ao jogo do Pong\nQuem fazer 10 pontos ganha\nUse as setas pra cima ou pra baixo\npra mover a raquete",16,32);
     introTimer++;
     if(introTimer > 200)
     {
