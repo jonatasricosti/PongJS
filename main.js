@@ -2,6 +2,7 @@
   const ctx = canvas.getContext('2d');
 
 
+  // pra carregar arquivos de imagem
   const BackgroundImage = new Image();
   const BallImage = new Image();
   const NumbersImage = new Image();
@@ -9,6 +10,9 @@
   const Player2Image = new Image();
   const PauseImage = new Image();
   const WhiteFontImage = new Image();
+  const GreenFontImage = new Image();
+  const CursorImage = new Image();
+
 
   const FPS = 30;
   const FRAME_DURATION = 1000 / FPS;
@@ -19,7 +23,7 @@
   function onImageLoad()
   {
     imagesLoaded++;
-    if (imagesLoaded === 7)
+    if (imagesLoaded === 9)
     {
       requestAnimationFrame(gameLoop);
     }
@@ -32,6 +36,8 @@
   Player2Image.onload = onImageLoad;
   PauseImage.onload = onImageLoad;
   WhiteFontImage.onload = onImageLoad;
+  GreenFontImage.onload = onImageLoad;
+  CursorImage.onload = onImageLoad;
 
 
   // use essa função pra carregar arquivos
@@ -46,6 +52,8 @@
     Player2Image.src = 'gfx/player2.png'
     PauseImage.src = 'gfx/pause.png'
     WhiteFontImage.src = 'gfx/whitefont.png'
+    GreenFontImage.src = 'gfx/greenfont.png'
+    CursorImage.src = 'gfx/cursor.png'
   }
 
   LoadFiles();
@@ -153,6 +161,13 @@
         height: 20
     };
 
+     // esse objeto representa o cursor do menu
+    let cursor =
+    {
+        x: 0,
+        y: 0
+    };
+
 
   let player1Score = 0;
   let player2Score = 0;
@@ -186,7 +201,7 @@
     }
   }
 
-    // essa função move o player2 pelo teclado
+  // essa função move o player2 pelo teclado
   function MovePlayer2()
   {
     
@@ -276,7 +291,7 @@
       ball.x = (canvas.width-ball.width)/2;
       ball.y = (canvas.height-ball.height)/2;
       player2Score = player2Score+1; // player2 faz um ponto
-      PlayScoreSound();
+      PlayScoreSound(); // toca som
     }
     
     // se passou do lado direito da tela
@@ -286,7 +301,7 @@
       ball.x = (canvas.width-ball.width)/2;
       ball.y = (canvas.height-ball.height)/2;
       player1Score = player1Score+1; // player1 faz um ponto
-      PlayScoreSound();
+      PlayScoreSound(); // toca som
     }
     
     
@@ -320,8 +335,55 @@
     }
   }
 
+  // essas váriaveis são os estados do jogo
+  let INTRO = 0;
+  let MENU = 1;
+  let GAME1 = 2;
+  let GAME2 = 3;
+  let PAUSE = 4;
+  let TUTORIAL = 5;
+  let ABOUT = 6;
+  let WIN1 = 7;
+  let WIN2 = 8;
+  let RESETGAME = 9;
 
-  function PlayGame()
+  let game_estado = MENU;
+
+  // essa função verifica quem ganhou o jogo
+  function CheckWin()
+  {
+    if(player1Score >= 10)
+    {
+      game_estado = WIN1;
+    }
+
+    else if(player2Score >= 10)
+    {
+      game_estado = WIN2;
+    }
+  }
+
+
+  // player 1 vs cpu
+  function PlayGame1()
+  {
+    // física
+    MovePlayer1();
+    MovePlayer2ByCPU();
+    MoveBall();
+
+    DrawImage(0,0, BackgroundImage);
+    DrawText(80,0,NumbersImage,player1Score.toString(),60,0);
+    DrawText(500,0,NumbersImage,player2Score.toString(),60,0);
+
+    DrawImage(player1.x, player1.y, Player1Image);
+    DrawImage(player2.x, player2.y, Player2Image);
+    DrawImage(ball.x,ball.y,BallImage);
+    CheckWin();
+  }
+
+  // player 1 vs player 2
+  function PlayGame2()
   {
     // física
     MovePlayer1();
@@ -335,13 +397,146 @@
     DrawImage(player1.x, player1.y, Player1Image);
     DrawImage(player2.x, player2.y, Player2Image);
     DrawImage(ball.x,ball.y,BallImage);
+    CheckWin();
   }
 
-  let INTRO = 0;
-  let GAME = 1;
-  let PAUSE = 2;
-  let MENU = 3;
-  let game_estado = INTRO;
+
+    let key = null;
+  window.addEventListener('keydown', function(event)
+  {
+  key = event.key;
+});
+
+
+
+
+
+  let index = 0; // pra mudar a posição do cursor do menu
+
+// use essa função pra desenhar e controlar o menu na tela
+function DrawMenuAndUpdateMenu()
+{
+
+    const options = ["Player1 vs CPU", "Player1 Vs Player2", "Tutorial", "Sobre"];
+
+    const NumberOfNames = options.length;
+
+    let dist = 30;
+    let x = 0;
+    let y = 0;
+    let NumberOfLetters = 0;
+    cursor.x = 0;
+    cursor.y = 0;
+
+    // programação do teclado
+    if(key === 'ArrowUp')
+    {
+        index = index-1;
+        key = null;
+    }
+
+    if(key === 'ArrowDown')
+    {
+        index = index+1;
+        key = null;
+    }
+
+    if(index > NumberOfNames - 1)
+    {
+        index = 0;
+    }
+
+     if(index < 0)
+    {
+        index = NumberOfNames - 1;
+    }
+
+    if(index == 0 && key === 'Enter')
+    {
+        game_estado = GAME1;
+        key = null;
+    }
+
+    if(index == 1 && key === 'Enter')
+    {
+        game_estado = GAME2;
+        key = null;
+    }
+
+    if(index == 2 && key === 'Enter')
+    {
+        game_estado = TUTORIAL;
+        key = null;
+    }
+
+    if(index == 3 && key === 'Enter')
+    {
+        game_estado = ABOUT;
+        key = null;
+    }
+
+
+    for(let i = 0; i < NumberOfNames; i++)
+    {
+        NumberOfLetters = options[i].length;
+
+        x = (canvas.width - 16*NumberOfLetters)/2;
+        y = 120;
+
+        // valor selecionado
+        if(index == i)
+        {
+            cursor.x = 166;
+            cursor.y = y + (dist*i)-2;
+            DrawImage(cursor.x,cursor.y,CursorImage);
+            DrawText(x, y+(dist*i), GreenFontImage, options[i], 16, 32);
+        }
+
+        // valor não selecionado
+        else
+        {
+            DrawText(x, y+(dist*i), WhiteFontImage, options[i], 16, 32);
+        }
+    }
+}
+
+
+
+  // desenha o tutorial na tela
+  function DrawTutorial()
+  {
+    TypeEffect(0,16,0,"Bem vindo ao jogo do pong\nTeclas w e s move o player1\nTeclas de cima e de baixo move o player2\nGanha quem fizer 10 pontos primeiro\nAperte Escape pra voltar ao Menu",16,32);
+  }
+
+  // os comandos do tutorial
+  function updateTutorial()
+  {
+
+      if(key === 'Escape')
+      {
+        game_estado = MENU;
+        key = null;
+      }
+  }
+
+  // desenha o about na tela
+  function DrawAbout()
+  {
+      DrawText(0,0,WhiteFontImage, "Jogo do Pong", 16, 32);
+      DrawText(0,32,WhiteFontImage, "Feito por", 16, 32);
+      DrawText(0,64,WhiteFontImage, "Jonatas Ricosti", 16, 32);
+      DrawText(0,96,WhiteFontImage, "Audio: Atari", 16, 32);
+  }
+
+  // os comandos de about
+  function updateAbout()
+  {
+      if(key === 'Escape')
+      {
+        game_estado = MENU;
+        key = null;
+      }
+  }
 
   function PauseGame()
   {
@@ -397,16 +592,18 @@
 }
 
 
-  let introTimer = 0;
-  function PlayIntro()
+
+  // essa função reseta algumas variáveis do jogo
+  function ResetGame()
   {
-    TypeEffect(0,70,0,"Bem vindo ao jogo do Pong\nQuem fazer 10 pontos ganha\nUse as setas pra cima ou pra baixo\npra mover a raquete",16,32);
-    introTimer++;
-    if(introTimer > 200)
-    {
-      game_estado = GAME;
-      introTimer = 0;
-    }
+    player1.x = 20;
+    player1.y = 190;
+
+    player2.x = 600;
+    player2.y = 190;
+
+    ball.x = 310;
+    ball.y = 230;
   }
 
 
@@ -416,26 +613,30 @@
     switch(game_estado)
     {
     case INTRO: PlayIntro(); break;
-    case GAME: PlayGame(); break;
+    case MENU: DrawMenuAndUpdateMenu(); break;
+    case GAME1: PlayGame1(); break;
+    case GAME2: PlayGame2(); break;
     case PAUSE: PauseGame(); break;
+    case TUTORIAL: DrawTutorial(); updateTutorial(); break;
+    case ABOUT: DrawAbout(); updateTutorial(); break;
+    case WIN1:
+    case WIN2:
+    case RESETGAME: ResetGame(); break;
     }
   }
 
-
-    let key = null;
-  window.addEventListener('keydown', function(event)
+  // essa função reseta as variáveis da função TypeEffect da função DrawTutorial
+  function ResetText()
   {
-  key = event.key;
-});
-
-
+    textProgress = textTimer = 0;
+  }
 
 
   // game loop
   function gameLoop()
   {
 
-    if(game_estado == GAME && key === 'Escape')
+    if(game_estado == GAME1 && key === 'Escape')
     {
       game_estado = PAUSE;
       key = null;
@@ -443,13 +644,30 @@
 
     else if(game_estado == PAUSE && key === 'Escape')
     {
-      game_estado = GAME;
+      game_estado = GAME1;
       key = null;
     }
 
+    if(game_estado == GAME2 && key === 'Escape')
+    {
+      game_estado = PAUSE;
+      key = null;
+    }
 
-    ClearScreen();
-    RunGame();
+    else if(game_estado == PAUSE && key === 'Escape')
+    {
+      game_estado = GAME2;
+      key = null;
+    }
 
-    setTimeout(gameLoop, FRAME_DURATION);
+    if(game_estado != TUTORIAL)
+    {
+      ResetText();
+    }
+
+
+    ClearScreen(); // limpa a tela
+    RunGame(); // troca as telas do jogo
+
+    setTimeout(gameLoop, FRAME_DURATION); // FrameRate
   }
